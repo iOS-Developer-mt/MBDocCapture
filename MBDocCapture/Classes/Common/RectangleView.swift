@@ -44,7 +44,7 @@ final class RectangleView: UIView {
         layer.lineWidth = 1.0
         layer.opacity = 1.0
         layer.isHidden = true
-        
+        layer.cornerRadius = 5
         return layer
     }()
     

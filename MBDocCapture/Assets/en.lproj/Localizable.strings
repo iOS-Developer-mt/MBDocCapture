@@ -25,13 +25,13 @@
 */
 
 /* The title on the navigation bar of the Edit screen. */
-"mbdoccapture.scan_edit_title"          =   "Trimming";
+"mbdoccapture.scan_edit_title"          =   "Crop Image";
 
 /* The title on the navigation bar of the Review screen. */
-"mbdoccapture.scan_review_title"        =   "Crop Image";
+"mbdoccapture.scan_review_title"        =   "Edit Image";
 
 /* Flip Document Prompt message. */
-"mbdoccapture.document_capture_flip"    =   "Flip your document and Touch the screen when you're ready to start the capture.";
+//"mbdoccapture.document_capture_flip"    =   "Flip your document and Touch the screen when you're ready to start the capture.";
 
 /* NavigationBar action titles */
 "mbdoccapture.next_button"              =   "Next";

@@ -161,7 +161,7 @@ final class ScannerViewController: UIViewController, UIAdaptivePresentationContr
     
     private func setupNavigationBar() {
         navigationItem.setLeftBarButton(cancelButton, animated: false)
-        self.navigationController?.navigationBar.backgroundColor = #colorLiteral(red: 0.1411764706, green: 0.6705882353, blue: 0.9882352941, alpha: 1)
+        navigationController?.navigationBar.backgroundColor = #colorLiteral(red: 0.1411764706, green: 0.6705882353, blue: 0.9882352941, alpha: 1)
         if #available(iOS 13.0, *) {
             isModalInPresentation = false
             navigationController?.presentationController?.delegate = self
@@ -334,7 +334,17 @@ extension ScannerViewController: RectangleDetectionDelegateProtocol {
         label.numberOfLines = 0
         label.textColor = .black
         label.textAlignment = .center
-        label.text = NSLocalizedString("mbdoccapture.document_capture_flip", tableName: nil, bundle: bundle(), value: "Flip your document and Touch the screen when you're ready to start the capture.", comment: "")
+        
+        if CaptureSession.current.isScanningTwoFacedDocument {
+            if let _ = CaptureSession.current.firstScanResult {
+                label.text = NSLocalizedString("mbdoccapture.document_capture_flip", tableName: nil, bundle: bundle(), value: "Back Side and Touch to foucs.", comment: "")
+            }else{
+              label.text = NSLocalizedString("mbdoccapture.document_capture_flip", tableName: nil, bundle: bundle(), value: "Front Side and Touch to foucs.", comment: "")
+            }
+        }
+        
+        
+        
         prepOverlayView.addSubview(label)
         
         let button = UIButton(frame: view.bounds)

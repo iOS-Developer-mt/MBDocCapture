@@ -28,7 +28,7 @@
 "mbdoccapture.scan_edit_title"          =   "Trimming";
 
 /* The title on the navigation bar of the Review screen. */
-"mbdoccapture.scan_review_title"        =   "Confirmation";
+"mbdoccapture.scan_review_title"        =   "Crop Image";
 
 /* Flip Document Prompt message. */
 "mbdoccapture.document_capture_flip"    =   "Flip your document and Touch the screen when you're ready to start the capture.";

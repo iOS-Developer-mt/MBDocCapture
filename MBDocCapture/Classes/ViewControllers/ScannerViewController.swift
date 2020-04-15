@@ -106,6 +106,8 @@ final class ScannerViewController: UIViewController, UIAdaptivePresentationContr
         if CaptureSession.current.isScanningTwoFacedDocument {
             if let _ = CaptureSession.current.firstScanResult {
                 displayPrepOverlay()
+            }else{
+                displayPrepOverlay()
             }
         }
     }

@@ -90,7 +90,8 @@ final class EditScanViewController: UIViewController, UIAdaptivePresentationCont
         
         setupViews()
         setupConstraints()
-        title = NSLocalizedString("mbdoccapture.scan_edit_title", tableName: nil, bundle: bundle(), value: "Trimming", comment: "")
+        title = NSLocalizedString("mbdoccapture.scan_edit_title", tableName: nil, bundle: bundle(), value: "Crop Image", comment: "")
+        
         navigationItem.rightBarButtonItem = nextButton
         navigationItem.leftBarButtonItem = cancelButton
               

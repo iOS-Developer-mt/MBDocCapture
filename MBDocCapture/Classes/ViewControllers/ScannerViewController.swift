@@ -159,7 +159,7 @@ final class ScannerViewController: UIViewController, UIAdaptivePresentationContr
     
     private func setupNavigationBar() {
         navigationItem.setLeftBarButton(cancelButton, animated: false)
-        
+        self.navigationController?.navigationBar.backgroundColor = #colorLiteral(red: 0.1411764706, green: 0.6705882353, blue: 0.9882352941, alpha: 1)
         if #available(iOS 13.0, *) {
             isModalInPresentation = false
             navigationController?.presentationController?.delegate = self

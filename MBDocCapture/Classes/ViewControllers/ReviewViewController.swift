@@ -92,7 +92,7 @@ final class ReviewViewController: UIViewController, UIAdaptivePresentationContro
             navigationController?.presentationController?.delegate = self
         }
         
-        title = NSLocalizedString("mbdoccapture.scan_review_title", tableName: nil, bundle: bundle(), value: "Confirmation", comment: "")
+        title = NSLocalizedString("mbdoccapture.scan_review_title", tableName: nil, bundle: bundle(), value: "Edit Image", comment: "")
         navigationItem.rightBarButtonItem = doneButton
     }
     

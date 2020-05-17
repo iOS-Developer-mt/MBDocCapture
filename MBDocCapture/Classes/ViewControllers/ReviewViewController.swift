@@ -51,6 +51,11 @@ final class ReviewViewController: UIViewController, UIAdaptivePresentationContro
         return button
     }()
     
+    
+    
+    
+    
+    
     lazy private var rotateButton: UIBarButtonItem = {
         let image = UIImage(named: "rotate", in: bundle(), compatibleWith: nil)
         let button = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(rotateImage))
@@ -122,9 +127,7 @@ final class ReviewViewController: UIViewController, UIAdaptivePresentationContro
     
     private func setupToolbar() {
         guard enhancedImageIsAvailable else { return }
-        
-        navigationController?.toolbar.barStyle = .blackTranslucent
-        
+        navigationController?.toolbar.barTintColor = UIColor(hexString: "#24ABFC")
         let fixedSpace = UIBarButtonItem(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
         let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         toolbarItems = [fixedSpace, enhanceButton, flexibleSpace, rotateButton, fixedSpace]

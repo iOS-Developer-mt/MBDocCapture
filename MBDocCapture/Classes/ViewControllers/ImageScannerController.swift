@@ -93,8 +93,8 @@ public final class ImageScannerController: UINavigationController {
         super.init(rootViewController: ScannerViewController())
         
         self.imageScannerDelegate = delegate
-        
         navigationBar.tintColor = .white
+        navigationBar.barTintColor = UIColor(hexString: "#24ABFC")
         self.view.addSubview(blackFlashView)
         setupConstraints()
         

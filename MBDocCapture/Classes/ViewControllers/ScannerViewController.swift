@@ -27,7 +27,7 @@
 import UIKit
 import AVFoundation
 
-/// The `ScannerViewController` offers an interface to give feedback to the user regarding rectangles that are detected. It also gives the user the opportunity to capture an image with a detected rectangle.
+// The `ScannerViewController` offers an interface to give feedback to the user regarding rectangles that are detected. It also gives the user the opportunity to capture an image with a detected rectangle.
 final class ScannerViewController: UIViewController, UIAdaptivePresentationControllerDelegate {
     
     private var prepOverlayView: UIView!
@@ -35,10 +35,10 @@ final class ScannerViewController: UIViewController, UIAdaptivePresentationContr
     private var captureSessionManager: CaptureSessionManager?
     private let videoPreviewLayer = AVCaptureVideoPreviewLayer()
     
-    /// The view that shows the focus rectangle (when the user taps to focus, similar to the Camera app)
+    // The view that shows the focus rectangle (when the user taps to focus, similar to the Camera app)
     private var focusRectangle: FocusRectangleView!
     
-    /// The view that draws the detected rectangles.
+    // The view that draws the detected rectangles.
     private let rectView = RectangleView()
             
     lazy private var shutterButton: ShutterButton = {
@@ -81,8 +81,8 @@ final class ScannerViewController: UIViewController, UIAdaptivePresentationContr
         
         title = nil
         
-        setupViews()
         setupNavigationBar()
+        setupViews()
         setupConstraints()
         
         captureSessionManager = CaptureSessionManager(videoPreviewLayer: videoPreviewLayer)
@@ -144,8 +144,9 @@ final class ScannerViewController: UIViewController, UIAdaptivePresentationContr
         } else if UIDevice.current.orientation == .portraitUpsideDown {
             videoPreviewLayer.connection!.videoOrientation       = .portraitUpsideDown
         }
-        
-        videoPreviewLayer.frame = view.layer.bounds
+        let w = view.layer.bounds.width
+        let h = view.layer.bounds.height
+        videoPreviewLayer.frame = CGRect(x: 20, y: 50, width: w, height: h)
     }
     
     // MARK: - Setups
@@ -161,7 +162,8 @@ final class ScannerViewController: UIViewController, UIAdaptivePresentationContr
     
     private func setupNavigationBar() {
         navigationItem.setLeftBarButton(cancelButton, animated: false)
-        navigationController?.navigationBar.backgroundColor = #colorLiteral(red: 0.1411764706, green: 0.6705882353, blue: 0.9882352941, alpha: 1)
+        navigationController?.navigationBar.barTintColor = UIColor("#24ABFC")
+        navigationController?.navigationBar.isTranslucent = false
         if #available(iOS 13.0, *) {
             isModalInPresentation = false
             navigationController?.presentationController?.delegate = self

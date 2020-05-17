@@ -40,8 +40,8 @@ final class RectangleView: UIView {
     
     private let rectLayer: CAShapeLayer = {
         let layer = CAShapeLayer()
-        layer.strokeColor = UIColor.red.cgColor
-        layer.lineWidth = 1.0
+        layer.strokeColor = UIColor(hexString: "#24ABFC").cgColor
+        layer.lineWidth = 2.0
         layer.opacity = 1.0
         layer.isHidden = true
         layer.cornerRadius = 5

@@ -94,7 +94,8 @@ final class EditScanViewController: UIViewController, UIAdaptivePresentationCont
         
         navigationItem.rightBarButtonItem = nextButton
         navigationItem.leftBarButtonItem = cancelButton
-              
+        navigationController?.navigationBar.backgroundColor = .red
+        navigationController?.navigationBar.isTranslucent = false
         if #available(iOS 13.0, *) {
             isModalInPresentation = false
             navigationController?.presentationController?.delegate = self

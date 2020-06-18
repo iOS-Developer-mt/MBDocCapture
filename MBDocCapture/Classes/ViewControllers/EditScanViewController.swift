@@ -30,6 +30,9 @@ import AVFoundation
 /// The `EditScanViewController` offers an interface for the user to edit the detected rectangle.
 final class EditScanViewController: UIViewController, UIAdaptivePresentationControllerDelegate {
     
+    
+
+    
     lazy private var imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.clipsToBounds = true
@@ -78,8 +81,11 @@ final class EditScanViewController: UIViewController, UIAdaptivePresentationCont
     init(image: UIImage, rect: Rectangle?, rotateImage: Bool = true) {
         self.image = rotateImage ? image.applyingPortraitOrientation() : image
         self.rect = rect ?? EditScanViewController.defaultRectangle(forImage: image)
+        //self.results = results
         super.init(nibName: nil, bundle: nil)
     }
+    
+   
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -196,9 +202,12 @@ final class EditScanViewController: UIViewController, UIAdaptivePresentationCont
         let finalImage = uiImage.withFixedOrientation()
         
         let results = ImageScannerResults(originalImage: image, scannedImage: finalImage, enhancedImage: enhancedImage, doesUserPreferEnhancedImage: false, detectedRectangle: scaledRect)
-        let reviewViewController = ReviewViewController(results: results)
         
-        navigationController?.pushViewController(reviewViewController, animated: true)
+        finishScan(results: results)
+        
+//        let reviewViewController = ReviewViewController(results: results)
+//        
+//        navigationController?.pushViewController(reviewViewController, animated: true)
     }
 
     private func displayRect() {
@@ -231,4 +240,26 @@ final class EditScanViewController: UIViewController, UIAdaptivePresentationCont
         
         return rect
     }
+    
+     private func finishScan(results:ImageScannerResults) {
+        guard let imageScannerController = navigationController as? ImageScannerController else { return }
+        var newResults = results
+        newResults.scannedImage = results.scannedImage
+//        newResults.enhancedImage = results.enhancedImage?.rotated(by: rotationAngle) ?? results.enhancedImage
+//        newResults.doesUserPreferEnhancedImage = isCurrentlyDisplayingEnhancedImage
+        if CaptureSession.current.isScanningTwoFacedDocument {
+            if let firstPageResult = CaptureSession.current.firstScanResult {
+                imageScannerController.imageScannerDelegate?.imageScannerController(imageScannerController, didFinishScanningWithPage1Results: firstPageResult, andPage2Results: newResults)
+                CaptureSession.current.isScanningTwoFacedDocument = false
+                CaptureSession.current.firstScanResult = nil
+            } else {
+                CaptureSession.current.firstScanResult = newResults
+                navigationController?.popToRootViewController(animated: true)
+            }
+        } else {
+            imageScannerController.imageScannerDelegate?.imageScannerController(imageScannerController, didFinishScanningWithResults: newResults)
+        }
+    }
+
+    
 }

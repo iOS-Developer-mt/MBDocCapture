@@ -28,12 +28,14 @@ class ViewController: UIViewController {
     @IBAction func didSelectType1Button(_ sender: Any) {
         let scanner = ImageScannerController(delegate: self)
         scanner.shouldScanTwoFaces = false
+        scanner.modalPresentationStyle = .fullScreen
         present(scanner, animated: true)
     }
     
     @IBAction func didSelectType2Button(_ sender: Any) {
         let scanner = ImageScannerController(delegate: self)
         scanner.shouldScanTwoFaces = true
+        scanner.modalPresentationStyle = .fullScreen
         present(scanner, animated: true)
     }
     

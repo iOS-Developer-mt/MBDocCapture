@@ -40,7 +40,89 @@ final class ScannerViewController: UIViewController, UIAdaptivePresentationContr
     
     // The view that draws the detected rectangles.
     private let rectView = RectangleView()
-            
+    
+    
+    
+    
+    lazy private var ScanTopView : UIView = {
+        let myView =  UIView()
+        myView.backgroundColor = .red
+        myView.translatesAutoresizingMaskIntoConstraints = false
+        
+        //Text Label
+        let gridButton = UIButton()
+        gridButton.backgroundColor = .clear
+        gridButton.setImage(UIImage(named: "grid", in: bundle(), compatibleWith: nil), for: .normal)
+        gridButton.setTitle("Grid", for: .normal)
+        gridButton.alignVertical()
+        
+        let batchButton = UIButton()
+        batchButton.backgroundColor = .yellow
+        
+        
+        let singleButton = UIButton()
+        singleButton.backgroundColor = .yellow
+     
+        
+        let QRButton = UIButton()
+        QRButton.backgroundColor = .yellow
+        
+        
+        let stack = UIStackView(arrangedSubviews: [gridButton,batchButton,singleButton,QRButton])
+        stack.backgroundColor = .green
+        stack.axis  = .horizontal
+        stack.distribution  = .equalSpacing
+        stack.alignment = .center
+        stack.spacing   = 10.0
+        myView.addSubview(stack)
+        
+        stack.translatesAutoresizingMaskIntoConstraints = false
+       
+        stack.topAnchor.constraint(equalTo: myView.topAnchor, constant: 0).isActive = true
+        stack.bottomAnchor.constraint(equalTo: myView.bottomAnchor, constant: 0).isActive = true
+        stack.leadingAnchor.constraint(equalTo: myView.leadingAnchor, constant: 10).isActive = true
+        stack.trailingAnchor.constraint(equalTo: myView.trailingAnchor, constant: -10).isActive = true
+
+        
+        return myView
+    }()
+    
+    
+    
+    
+    lazy private var ScanBottomView : UIView = {
+        let myView =  UIView()
+        myView.backgroundColor = .red
+        myView.translatesAutoresizingMaskIntoConstraints = false
+        
+        
+        //Text Label
+        let galleryBtn = UIButton()
+        galleryBtn.backgroundColor = .yellow
+        
+        let cameraButton = UIButton()
+        cameraButton.backgroundColor = .yellow
+        cameraButton.addTarget(self, action: #selector(captureImage(_:)), for: .touchUpInside)
+        
+        let flashButton = UIButton()
+        flashButton.backgroundColor = .yellow
+        
+        
+        let stack = UIStackView(arrangedSubviews: [galleryBtn,cameraButton,flashButton])
+        stack.backgroundColor = .green
+        stack.axis  = .horizontal
+        stack.distribution  = .equalSpacing
+        stack.alignment = .center
+        stack.spacing   = 10.0
+        
+        
+        myView.addSubview(stack)
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.centerXAnchor.constraint(equalTo: myView.centerXAnchor).isActive = true
+        stack.centerYAnchor.constraint(equalTo: myView.centerYAnchor).isActive = true
+        return myView
+    }()
+    
     lazy private var shutterButton: ShutterButton = {
         let button = ShutterButton()
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -87,7 +169,7 @@ final class ScannerViewController: UIViewController, UIAdaptivePresentationContr
         
         captureSessionManager = CaptureSessionManager(videoPreviewLayer: videoPreviewLayer)
         captureSessionManager?.delegate = self
-                
+        
         NotificationCenter.default.addObserver(self, selector: #selector(subjectAreaDidChange), name: NSNotification.Name.AVCaptureDeviceSubjectAreaDidChange, object: nil)
         //        NotificationCenter.default.addObserver(self, selector: #selector(updateCameraOrientation), name: UIDevice.orientationDidChangeNotification, object: nil)
     }
@@ -100,7 +182,7 @@ final class ScannerViewController: UIViewController, UIAdaptivePresentationContr
         rectView.removeRectangle()
         captureSessionManager?.start()
         UIApplication.shared.isIdleTimerDisabled = true
-                
+        
         navigationController?.setToolbarHidden(true, animated: false)
         
         if CaptureSession.current.isScanningTwoFacedDocument {
@@ -120,7 +202,9 @@ final class ScannerViewController: UIViewController, UIAdaptivePresentationContr
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
-        videoPreviewLayer.frame = view.layer.bounds
+        
+        
+        videoPreviewLayer.frame = CGRect(x: 0, y: ScanTopView.bounds.width, width: view.bounds.width, height: view.bounds.height - ScanBottomView.bounds.height)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -157,8 +241,13 @@ final class ScannerViewController: UIViewController, UIAdaptivePresentationContr
         rectView.editable = false
         view.addSubview(rectView)
         view.addSubview(shutterButton)
+        view.addSubview(ScanBottomView)
+        view.addSubview(ScanTopView)
         view.addSubview(activityIndicator)
     }
+    
+    
+    
     
     private func setupNavigationBar() {
         navigationItem.setLeftBarButton(cancelButton, animated: false)
@@ -174,6 +263,22 @@ final class ScannerViewController: UIViewController, UIAdaptivePresentationContr
         var rectViewConstraints = [NSLayoutConstraint]()
         var shutterButtonConstraints = [NSLayoutConstraint]()
         var activityIndicatorConstraints = [NSLayoutConstraint]()
+        var bottomViewConstraints = [NSLayoutConstraint]()
+        var topViewConstraints = [NSLayoutConstraint]()
+        
+        bottomViewConstraints = [
+            ScanBottomView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            ScanBottomView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            ScanBottomView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            ScanBottomView.heightAnchor.constraint(equalToConstant: 100)
+        ]
+        
+        topViewConstraints = [
+            ScanTopView.topAnchor.constraint(equalTo: view.topAnchor),
+            ScanTopView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            ScanTopView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            ScanTopView.heightAnchor.constraint(equalToConstant: 60)
+        ]
         
         rectViewConstraints = [
             rectView.topAnchor.constraint(equalTo: view.topAnchor),
@@ -201,7 +306,7 @@ final class ScannerViewController: UIViewController, UIAdaptivePresentationContr
             shutterButtonConstraints.append(shutterButtonBottomConstraint)
         }
         
-        NSLayoutConstraint.activate(rectViewConstraints + shutterButtonConstraints + activityIndicatorConstraints)
+        NSLayoutConstraint.activate(rectViewConstraints + shutterButtonConstraints + topViewConstraints + bottomViewConstraints + activityIndicatorConstraints)
     }
     
     func presentationControllerShouldDismiss(_ presentationController: UIPresentationController) -> Bool {
@@ -341,7 +446,7 @@ extension ScannerViewController: RectangleDetectionDelegateProtocol {
             if let _ = CaptureSession.current.firstScanResult {
                 label.text = NSLocalizedString("mbdoccapture.document_capture_flip", tableName: nil, bundle: bundle(), value: "Back Side and Touch to foucs.", comment: "")
             }else{
-              label.text = NSLocalizedString("mbdoccapture.document_capture_flip", tableName: nil, bundle: bundle(), value: "Front Side and Touch to foucs.", comment: "")
+                label.text = NSLocalizedString("mbdoccapture.document_capture_flip", tableName: nil, bundle: bundle(), value: "Front Side and Touch to foucs.", comment: "")
             }
         }
         
@@ -365,3 +470,36 @@ extension ScannerViewController: RectangleDetectionDelegateProtocol {
         CaptureSession.current.isEditing = false
     }
 }
+
+
+extension UIButton {
+    func alignVertical(spacing: CGFloat = 5.0) {
+    guard let imageSize = imageView?.image?.size,
+      let text = titleLabel?.text,
+      let font = titleLabel?.font
+    else { return }
+
+    titleEdgeInsets = UIEdgeInsets(
+      top: 0.0,
+      left: -imageSize.width,
+      bottom: -(imageSize.height + spacing),
+      right: 0.0
+    )
+
+    let titleSize = text.size(withAttributes: [.font: font])
+    imageEdgeInsets = UIEdgeInsets(
+      top: -(titleSize.height + spacing),
+      left: 0.0,
+      bottom: 0.0, right: -titleSize.width
+    )
+
+    let edgeOffset = abs(titleSize.height - imageSize.height) / 2.0
+    contentEdgeInsets = UIEdgeInsets(
+      top: edgeOffset,
+      left: 0.0,
+      bottom: edgeOffset,
+      right: 0.0
+    )
+  }
+}
+

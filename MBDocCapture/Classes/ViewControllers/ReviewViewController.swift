@@ -50,11 +50,7 @@ final class ReviewViewController: UIViewController, UIAdaptivePresentationContro
         button.tintColor = .white
         return button
     }()
-    
-    
-    
-    
-    
+
     
     lazy private var rotateButton: UIBarButtonItem = {
         let image = UIImage(named: "rotate", in: bundle(), compatibleWith: nil)
@@ -62,6 +58,8 @@ final class ReviewViewController: UIViewController, UIAdaptivePresentationContro
         button.tintColor = .white
         return button
     }()
+    
+    
     
     lazy private var doneButton: UIBarButtonItem = {
         let title = NSLocalizedString("mbdoccapture.next_button", tableName: nil, bundle: bundle(), value: "Next", comment: "")
@@ -130,7 +128,8 @@ final class ReviewViewController: UIViewController, UIAdaptivePresentationContro
         navigationController?.toolbar.barTintColor = UIColor(hexString: "#24ABFC")
         let fixedSpace = UIBarButtonItem(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
         let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        toolbarItems = [fixedSpace, enhanceButton, flexibleSpace, rotateButton, fixedSpace]
+        toolbarItems = [enhanceButton,flexibleSpace,rotateButton,flexibleSpace,doneButton,flexibleSpace
+        ]
     }
     
     private func setupConstraints() {
@@ -173,7 +172,6 @@ final class ReviewViewController: UIViewController, UIAdaptivePresentationContro
         if rotationAngle.value == 360 {
             rotationAngle.value = 0
         }
-        
         reloadImage()
     }
     

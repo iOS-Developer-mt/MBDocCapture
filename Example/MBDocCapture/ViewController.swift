@@ -51,6 +51,10 @@ class ViewController: UIViewController {
 }
 
 extension ViewController: ImageScannerControllerDelegate {
+    func didTapQRCodeButton() {
+        print("Qr code button tapped")
+    }
+    
     func imageScannerController(_ scanner: ImageScannerController, didFinishScanningWithResults results: ImageScannerResults) {
         scanner.dismiss(animated: true) {
             self.resultContainerView.isHidden    =   false
@@ -63,6 +67,8 @@ extension ViewController: ImageScannerControllerDelegate {
             }
         }
     }
+    
+   
     
     func imageScannerController(_ scanner: ImageScannerController, didFinishScanningWithPage1Results page1Results: ImageScannerResults, andPage2Results page2Results: ImageScannerResults) {
         scanner.dismiss(animated: true) {

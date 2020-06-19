@@ -163,6 +163,7 @@ final class CaptureSessionManager: NSObject, AVCaptureVideoDataOutputSampleBuffe
     }
     
     internal func capturePhoto() {
+       
         guard let connection = photoOutput.connection(with: .video), connection.isEnabled, connection.isActive else {
             let error = ImageScannerControllerError.capture
             delegate?.captureSessionManager(self, didFailWithError: error)
@@ -170,9 +171,9 @@ final class CaptureSessionManager: NSObject, AVCaptureVideoDataOutputSampleBuffe
         }
         
         let photoSettings = AVCapturePhotoSettings()
+        photoSettings.flashMode = .on
         photoSettings.isHighResolutionPhotoEnabled = true
         photoSettings.isAutoStillImageStabilizationEnabled = true
-        
         photoOutput.capturePhoto(with: photoSettings, delegate: self)
     }
     

@@ -23,7 +23,7 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 //
-
+//com.luzanovroman.BLECar
 import UIKit
 import AVFoundation
 
@@ -41,8 +41,8 @@ final class ScannerViewController: UIViewController, UIAdaptivePresentationContr
     // The view that draws the detected rectangles.
     private let rectView = RectangleView()
     
-    
-    
+   private let griview = GridView()
+
     
     lazy private var ScanTopView : UIView = {
         let myView =  UIView()
@@ -55,6 +55,7 @@ final class ScannerViewController: UIViewController, UIAdaptivePresentationContr
         gridButton.setImage(UIImage(named: "grid", in: bundle(), compatibleWith: nil), for: .normal)
         gridButton.setTitle("Grid", for: .normal)
         gridButton.alignVertical()
+        gridButton.addTarget(self, action: #selector(gridButtonTapped), for: .touchUpInside)
         
         let batchButton = UIButton()
         batchButton.backgroundColor = .yellow
@@ -66,7 +67,7 @@ final class ScannerViewController: UIViewController, UIAdaptivePresentationContr
         
         let QRButton = UIButton()
         QRButton.backgroundColor = .yellow
-        
+        QRButton.addTarget(self, action: #selector(qrButtonTapped), for: .touchUpInside)
         
         let stack = UIStackView(arrangedSubviews: [gridButton,batchButton,singleButton,QRButton])
         stack.backgroundColor = .green
@@ -191,20 +192,24 @@ final class ScannerViewController: UIViewController, UIAdaptivePresentationContr
             }else{
                 displayPrepOverlay()
             }
+            ScanBottomView.isHidden = true
+            ScanTopView.isHidden = true
+        }else{
+            ScanBottomView.isHidden = false
+            ScanTopView.isHidden = false
         }
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         updateCameraOrientation()
+        
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        
-        
-        
-        videoPreviewLayer.frame = CGRect(x: 0, y: ScanTopView.bounds.width, width: view.bounds.width, height: view.bounds.height - ScanBottomView.bounds.height)
+       
+        videoPreviewLayer.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -230,7 +235,7 @@ final class ScannerViewController: UIViewController, UIAdaptivePresentationContr
         }
         let w = view.layer.bounds.width
         let h = view.layer.bounds.height
-        videoPreviewLayer.frame = CGRect(x: 20, y: 50, width: w, height: h)
+        videoPreviewLayer.frame = CGRect(x: 0, y: 0, width: w, height: h)
     }
     
     // MARK: - Setups
@@ -246,7 +251,38 @@ final class ScannerViewController: UIViewController, UIAdaptivePresentationContr
         view.addSubview(activityIndicator)
     }
     
+    var isGridShowing = false
     
+    @objc private func flashButtonTapped(){
+        guard let device = AVCaptureDevice.default(for: AVMediaType.video) else{
+            return
+        }
+        if device.hasFlash {
+            AVCapturePhotoSettings().flashMode = .on
+        }
+    }
+    
+
+    @objc private func gridButtonTapped(){
+        print("grid clicked")
+        griview.backgroundColor = .clear
+        if !isGridShowing {
+            view.addSubview(griview)
+            isGridShowing = true
+        }else{
+            DispatchQueue.main.async{
+                self.griview.removeFromSuperview()
+                self.isGridShowing = false
+            }
+        }
+        griview.frame = CGRect(x: 0, y: 60, width: view.bounds.width, height: view.bounds.height - 160)
+    }
+    
+    @objc func qrButtonTapped(){
+        guard let imageScannerController = navigationController as? ImageScannerController else { return }
+        imageScannerController.imageScannerDelegate?.didTapQRCodeButton()
+        //navigationController?.popToRootViewController(animated: true)
+    }
     
     
     private func setupNavigationBar() {
@@ -333,16 +369,16 @@ final class ScannerViewController: UIViewController, UIAdaptivePresentationContr
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
-        
+       
         guard  let touch = touches.first else { return }
         let touchPoint = touch.location(in: view)
         let convertedTouchPoint: CGPoint = videoPreviewLayer.captureDevicePointConverted(fromLayerPoint: touchPoint)
-        
+
         CaptureSession.current.removeFocusRectangleIfNeeded(focusRectangle, animated: false)
-        
+
         focusRectangle = FocusRectangleView(touchPoint: touchPoint)
         view.addSubview(focusRectangle)
-        
+
         do {
             try CaptureSession.current.setFocusPointToTapPoint(convertedTouchPoint)
         } catch {
@@ -358,8 +394,34 @@ final class ScannerViewController: UIViewController, UIAdaptivePresentationContr
     @objc private func captureImage(_ sender: UIButton) {
         (navigationController as? ImageScannerController)?.flashToBlack()
         shutterButton.isUserInteractionEnabled = false
+       // toggleFlash()
         captureSessionManager?.capturePhoto()
     }
+    
+    func toggleFlash() {
+        guard let backCamera = AVCaptureDevice.default(for: AVMediaType.video)
+            else {
+                print("Unable to access back camera!")
+                return
+        }
+        do {
+            if backCamera.hasTorch {
+                try backCamera.lockForConfiguration()
+                if #available(iOS 11.0, *) {
+                    let settings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.jpeg])
+                    settings.flashMode = .on
+                } else {
+                    // Fallback on earlier versions
+                }
+                backCamera.unlockForConfiguration()
+                
+              //  stillImageOutput.capturePhoto(with: settings, delegate: self)
+            }
+        } catch {
+            return
+        }
+    }
+    
     
     @objc func autoCaptureSwitchValueDidChange(sender:UISwitch!) {
         if sender.isOn {

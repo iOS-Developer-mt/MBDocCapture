@@ -51,9 +51,12 @@ class ViewController: UIViewController {
 }
 
 extension ViewController: ImageScannerControllerDelegate {
-    func didTapQRCodeButton() {
-        print("Qr code button tapped")
+    func didTapQRCodeButton(_ scanner: ImageScannerController) {
+        
     }
+    
+   
+    
     
     func imageScannerController(_ scanner: ImageScannerController, didFinishScanningWithResults results: ImageScannerResults) {
         scanner.dismiss(animated: true) {

@@ -280,8 +280,7 @@ final class ScannerViewController: UIViewController, UIAdaptivePresentationContr
     
     @objc func qrButtonTapped(){
         guard let imageScannerController = navigationController as? ImageScannerController else { return }
-        imageScannerController.imageScannerDelegate?.didTapQRCodeButton()
-        //navigationController?.popToRootViewController(animated: true)
+        imageScannerController.imageScannerDelegate?.didTapQRCodeButton(imageScannerController)
     }
     
     

@@ -61,7 +61,7 @@ public protocol ImageScannerControllerDelegate: NSObjectProtocol {
     ///   - error: The error that occured.
     func imageScannerController(_ scanner: ImageScannerController, didFailWithError error: Error)
     
-    func didTapQRCodeButton()
+    func didTapQRCodeButton(_ scanner: ImageScannerController)
     
 }
 

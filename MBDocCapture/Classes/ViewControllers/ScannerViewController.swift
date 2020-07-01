@@ -40,50 +40,55 @@ final class ScannerViewController: UIViewController, UIAdaptivePresentationContr
     
     // The view that draws the detected rectangles.
     private let rectView = RectangleView()
-    
-   private let griview = GridView()
+    let gridButton = UIButton()
+    let batchButton = UIButton()
+    let singleButton = UIButton()
+    let flashButton = UIButton()
+    let QRButton = UIButton()
 
+    private let griview = GridView()
+    
     
     lazy private var ScanTopView : UIView = {
         let myView =  UIView()
-        myView.backgroundColor = .red
+        myView.backgroundColor = #colorLiteral(red: 0.09803921569, green: 0.1568627451, blue: 0.231372549, alpha: 1)
         myView.translatesAutoresizingMaskIntoConstraints = false
         
         //Text Label
-        let gridButton = UIButton()
         gridButton.backgroundColor = .clear
         gridButton.setImage(UIImage(named: "grid", in: bundle(), compatibleWith: nil), for: .normal)
-        gridButton.setTitle("Grid", for: .normal)
-        gridButton.alignVertical()
         gridButton.addTarget(self, action: #selector(gridButtonTapped), for: .touchUpInside)
         
-        let batchButton = UIButton()
-        batchButton.backgroundColor = .yellow
+        batchButton.backgroundColor = .clear
+        batchButton.setImage(UIImage(named: "batch", in: bundle(), compatibleWith: nil), for: .normal)
+        batchButton.addTarget(self, action: #selector(batchleButtonTapped(_:)), for: .touchUpInside)
         
         
-        let singleButton = UIButton()
-        singleButton.backgroundColor = .yellow
-     
         
-        let QRButton = UIButton()
-        QRButton.backgroundColor = .yellow
+        singleButton.backgroundColor = .clear
+        singleButton.setImage(UIImage(named: "single_selected", in: bundle(), compatibleWith: nil), for: .normal)
+        singleButton.addTarget(self, action: #selector(singleButtonTapped(_:)), for: .touchUpInside)
+        
+        
+        QRButton.backgroundColor = .clear
+        QRButton.setImage(UIImage(named: "qrcode", in: bundle(), compatibleWith: nil), for: .normal)
         QRButton.addTarget(self, action: #selector(qrButtonTapped), for: .touchUpInside)
         
         let stack = UIStackView(arrangedSubviews: [gridButton,batchButton,singleButton,QRButton])
         stack.backgroundColor = .green
         stack.axis  = .horizontal
-        stack.distribution  = .equalSpacing
-        stack.alignment = .center
+        stack.distribution  = .fillEqually
+        stack.alignment = .fill
         stack.spacing   = 10.0
         myView.addSubview(stack)
         
         stack.translatesAutoresizingMaskIntoConstraints = false
-       
+        
         stack.topAnchor.constraint(equalTo: myView.topAnchor, constant: 0).isActive = true
         stack.bottomAnchor.constraint(equalTo: myView.bottomAnchor, constant: 0).isActive = true
         stack.leadingAnchor.constraint(equalTo: myView.leadingAnchor, constant: 10).isActive = true
         stack.trailingAnchor.constraint(equalTo: myView.trailingAnchor, constant: -10).isActive = true
-
+        
         
         return myView
     }()
@@ -93,28 +98,42 @@ final class ScannerViewController: UIViewController, UIAdaptivePresentationContr
     
     lazy private var ScanBottomView : UIView = {
         let myView =  UIView()
-        myView.backgroundColor = .red
+        myView.backgroundColor = #colorLiteral(red: 0.09803921569, green: 0.1568627451, blue: 0.231372549, alpha: 1)
         myView.translatesAutoresizingMaskIntoConstraints = false
         
         
         //Text Label
         let galleryBtn = UIButton()
-        galleryBtn.backgroundColor = .yellow
+        galleryBtn.backgroundColor = .clear
+        galleryBtn.setImage(UIImage(named: "gallery", in: bundle(), compatibleWith: nil), for: .normal)
+        galleryBtn.addTarget(self, action: #selector(galleryclicked), for: .touchUpInside)
         
         let cameraButton = UIButton()
-        cameraButton.backgroundColor = .yellow
+        cameraButton.backgroundColor = .clear
+        cameraButton.setImage(UIImage(named: "camera", in: bundle(), compatibleWith: nil), for: .normal)
         cameraButton.addTarget(self, action: #selector(captureImage(_:)), for: .touchUpInside)
         
-        let flashButton = UIButton()
-        flashButton.backgroundColor = .yellow
+        flashButton.backgroundColor = .clear
+        
+        
+        let flashStatus = UserDefaults.standard.bool(forKey: "flash")
+        print(flashStatus)
+        if flashStatus {
+            flashButton.setImage(UIImage(named: "flash_on", in: bundle(), compatibleWith: nil), for: .normal)
+        }else{
+            flashButton.setImage(UIImage(named: "flash_off", in: bundle(), compatibleWith: nil), for: .normal)
+        }
+        
+        
+        flashButton.addTarget(self, action: #selector(flashCliked(_:)), for: .touchUpInside)
         
         
         let stack = UIStackView(arrangedSubviews: [galleryBtn,cameraButton,flashButton])
         stack.backgroundColor = .green
         stack.axis  = .horizontal
-        stack.distribution  = .equalSpacing
+        stack.distribution  = .fill
         stack.alignment = .center
-        stack.spacing   = 10.0
+        stack.spacing   = 60.0
         
         
         myView.addSubview(stack)
@@ -208,7 +227,7 @@ final class ScannerViewController: UIViewController, UIAdaptivePresentationContr
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-       
+        
         videoPreviewLayer.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height)
     }
     
@@ -262,16 +281,45 @@ final class ScannerViewController: UIViewController, UIAdaptivePresentationContr
         }
     }
     
-
+    
+    @objc func singleButtonTapped(_ sender : UIButton){
+        singleButton.setImage(UIImage(named: "single_selected", in: bundle(), compatibleWith: nil), for: .normal)
+        
+        batchButton.setImage(UIImage(named: "batch", in: bundle(), compatibleWith: nil), for: .normal)
+        
+    }
+    
+    @objc func batchleButtonTapped(_ sender : UIButton){
+        batchButton.setImage(UIImage(named: "batch_selected", in: bundle(), compatibleWith: nil), for: .normal)
+        
+        singleButton.setImage(UIImage(named: "single", in: bundle(), compatibleWith: nil), for: .normal)
+    }
+    
+    @objc func flashCliked(_ sender:UIButton){
+        let flashStatus = UserDefaults.standard.bool(forKey: "flash")
+        print(flashStatus)
+        if flashStatus {
+            flashButton.setImage(UIImage(named: "flash_off", in: bundle(), compatibleWith: nil), for: .normal)
+            UserDefaults.standard.set(false, forKey: "flash")
+        }else{
+            flashButton.setImage(UIImage(named: "flash_on", in: bundle(), compatibleWith: nil), for: .normal)
+            UserDefaults.standard.set(true, forKey: "flash")
+        }
+        UserDefaults.standard.synchronize()
+    }
+    
+    
     @objc private func gridButtonTapped(){
         print("grid clicked")
         griview.backgroundColor = .clear
         if !isGridShowing {
             view.addSubview(griview)
+            gridButton.setImage(UIImage(named: "grid_selected", in: bundle(), compatibleWith: nil), for: .normal)
             isGridShowing = true
         }else{
             DispatchQueue.main.async{
                 self.griview.removeFromSuperview()
+                self.gridButton.setImage(UIImage(named: "grid", in: self.bundle(), compatibleWith: nil), for: .normal)
                 self.isGridShowing = false
             }
         }
@@ -283,10 +331,15 @@ final class ScannerViewController: UIViewController, UIAdaptivePresentationContr
         imageScannerController.imageScannerDelegate?.didTapQRCodeButton(imageScannerController)
     }
     
+    @objc func galleryclicked(){
+        guard let imageScannerController = navigationController as? ImageScannerController else { return }
+        imageScannerController.imageScannerDelegate?.galleryButtonClicked(imageScannerController)
+    }
+    
     
     private func setupNavigationBar() {
         navigationItem.setLeftBarButton(cancelButton, animated: false)
-        navigationController?.navigationBar.barTintColor = UIColor("#24ABFC")
+        navigationController?.navigationBar.barTintColor = #colorLiteral(red: 0.09803921569, green: 0.1568627451, blue: 0.231372549, alpha: 1)
         navigationController?.navigationBar.isTranslucent = false
         if #available(iOS 13.0, *) {
             isModalInPresentation = false
@@ -368,16 +421,16 @@ final class ScannerViewController: UIViewController, UIAdaptivePresentationContr
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
-       
+        
         guard  let touch = touches.first else { return }
         let touchPoint = touch.location(in: view)
         let convertedTouchPoint: CGPoint = videoPreviewLayer.captureDevicePointConverted(fromLayerPoint: touchPoint)
-
+        
         CaptureSession.current.removeFocusRectangleIfNeeded(focusRectangle, animated: false)
-
+        
         focusRectangle = FocusRectangleView(touchPoint: touchPoint)
         view.addSubview(focusRectangle)
-
+        
         do {
             try CaptureSession.current.setFocusPointToTapPoint(convertedTouchPoint)
         } catch {
@@ -393,7 +446,7 @@ final class ScannerViewController: UIViewController, UIAdaptivePresentationContr
     @objc private func captureImage(_ sender: UIButton) {
         (navigationController as? ImageScannerController)?.flashToBlack()
         shutterButton.isUserInteractionEnabled = false
-       // toggleFlash()
+        // toggleFlash()
         captureSessionManager?.capturePhoto()
     }
     
@@ -414,7 +467,7 @@ final class ScannerViewController: UIViewController, UIAdaptivePresentationContr
                 }
                 backCamera.unlockForConfiguration()
                 
-              //  stillImageOutput.capturePhoto(with: settings, delegate: self)
+                //  stillImageOutput.capturePhoto(with: settings, delegate: self)
             }
         } catch {
             return
@@ -535,32 +588,32 @@ extension ScannerViewController: RectangleDetectionDelegateProtocol {
 
 extension UIButton {
     func alignVertical(spacing: CGFloat = 5.0) {
-    guard let imageSize = imageView?.image?.size,
-      let text = titleLabel?.text,
-      let font = titleLabel?.font
-    else { return }
-
-    titleEdgeInsets = UIEdgeInsets(
-      top: 0.0,
-      left: -imageSize.width,
-      bottom: -(imageSize.height + spacing),
-      right: 0.0
-    )
-
-    let titleSize = text.size(withAttributes: [.font: font])
-    imageEdgeInsets = UIEdgeInsets(
-      top: -(titleSize.height + spacing),
-      left: 0.0,
-      bottom: 0.0, right: -titleSize.width
-    )
-
-    let edgeOffset = abs(titleSize.height - imageSize.height) / 2.0
-    contentEdgeInsets = UIEdgeInsets(
-      top: edgeOffset,
-      left: 0.0,
-      bottom: edgeOffset,
-      right: 0.0
-    )
-  }
+        guard let imageSize = imageView?.image?.size,
+            let text = titleLabel?.text,
+            let font = titleLabel?.font
+            else { return }
+        
+        titleEdgeInsets = UIEdgeInsets(
+            top: 0.0,
+            left: -imageSize.width,
+            bottom: -(imageSize.height + spacing),
+            right: 0.0
+        )
+        
+        let titleSize = text.size(withAttributes: [.font: font])
+        imageEdgeInsets = UIEdgeInsets(
+            top: -(titleSize.height + spacing),
+            left: 0.0,
+            bottom: 0.0, right: -titleSize.width
+        )
+        
+        let edgeOffset = abs(titleSize.height - imageSize.height) / 2.0
+        contentEdgeInsets = UIEdgeInsets(
+            top: edgeOffset,
+            left: 0.0,
+            bottom: edgeOffset,
+            right: 0.0
+        )
+    }
 }
 

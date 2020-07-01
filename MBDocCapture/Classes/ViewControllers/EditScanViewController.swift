@@ -30,9 +30,6 @@ import AVFoundation
 /// The `EditScanViewController` offers an interface for the user to edit the detected rectangle.
 final class EditScanViewController: UIViewController, UIAdaptivePresentationControllerDelegate {
     
-    
-
-    
     lazy private var imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.clipsToBounds = true
@@ -52,8 +49,11 @@ final class EditScanViewController: UIViewController, UIAdaptivePresentationCont
     }()
     
     lazy private var nextButton: UIBarButtonItem = {
-        let title = NSLocalizedString("mbdoccapture.next_button", tableName: nil, bundle: bundle(), value: "Next", comment: "")
-        let button = UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(pushReviewController))
+        
+        let image = UIImage(named: "done", in: bundle(), compatibleWith: nil)
+        let button = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(pushReviewController))
+        
+        
         button.tintColor = .white
         return button
     }()
@@ -96,7 +96,7 @@ final class EditScanViewController: UIViewController, UIAdaptivePresentationCont
         
         setupViews()
         setupConstraints()
-        title = NSLocalizedString("mbdoccapture.scan_edit_title", tableName: nil, bundle: bundle(), value: "Crop Image", comment: "")
+        title = NSLocalizedString("mbdoccapture.scan_edit_title", tableName: nil, bundle: bundle(), value: "", comment: "")
         
         navigationItem.rightBarButtonItem = nextButton
         navigationItem.leftBarButtonItem = cancelButton

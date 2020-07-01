@@ -42,6 +42,8 @@ public struct Rectangle: Transformable {
     /// A point that specifies the bottom left corner of the rectangle.
     public var bottomLeft: CGPoint
     
+  
+    
     init(rectangleFeature: CIRectangleFeature) {
         self.topLeft = rectangleFeature.topLeft
         self.topRight = rectangleFeature.topRight

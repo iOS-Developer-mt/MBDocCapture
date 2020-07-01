@@ -51,8 +51,13 @@ class ViewController: UIViewController {
 }
 
 extension ViewController: ImageScannerControllerDelegate {
+    func galleryButtonClicked(_ scanner: ImageScannerController) {
+        print("gallery tapped")
+    }
+    
+    
     func didTapQRCodeButton(_ scanner: ImageScannerController) {
-        
+        print("do nothing")
     }
     
    

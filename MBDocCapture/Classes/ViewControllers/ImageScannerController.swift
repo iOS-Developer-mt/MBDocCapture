@@ -63,6 +63,9 @@ public protocol ImageScannerControllerDelegate: NSObjectProtocol {
     
     func didTapQRCodeButton(_ scanner: ImageScannerController)
     
+    
+    func galleryButtonClicked(_ scanner: ImageScannerController)
+
 }
 
 /// A view controller that manages the full flow for scanning documents.
@@ -97,7 +100,7 @@ public final class ImageScannerController: UINavigationController {
         
         self.imageScannerDelegate = delegate
         navigationBar.tintColor = .white
-        navigationBar.barTintColor = UIColor(hexString: "#24ABFC")
+        navigationBar.barTintColor = #colorLiteral(red: 0.09803921569, green: 0.1568627451, blue: 0.231372549, alpha: 1)
         self.view.addSubview(blackFlashView)
         setupConstraints()
         

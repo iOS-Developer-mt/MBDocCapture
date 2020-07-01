@@ -40,7 +40,7 @@ final class RectangleView: UIView {
     
     private let rectLayer: CAShapeLayer = {
         let layer = CAShapeLayer()
-        layer.strokeColor = UIColor(hexString: "#24ABFC").cgColor
+        layer.strokeColor = #colorLiteral(red: 0.1294117647, green: 0.7764705882, blue: 0.6431372549, alpha: 1)
         layer.lineWidth = 2.0
         layer.opacity = 1.0
         layer.isHidden = true
@@ -98,6 +98,7 @@ final class RectangleView: UIView {
         return EditScanCornerView(frame: CGRect(origin: .zero, size: cornerViewSize), position: .bottomLeft)
     }()
     
+ 
     private let highlightedCornerViewSize = CGSize(width: 75.0, height: 75.0)
     private let cornerViewSize = CGSize(width: 20.0, height: 20.0)
     

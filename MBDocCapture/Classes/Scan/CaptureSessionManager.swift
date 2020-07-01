@@ -171,7 +171,14 @@ final class CaptureSessionManager: NSObject, AVCaptureVideoDataOutputSampleBuffe
         }
         
         let photoSettings = AVCapturePhotoSettings()
-        photoSettings.flashMode = .on
+        //trun flash on off
+        let flashStatus = UserDefaults.standard.bool(forKey: "flash")
+        print(flashStatus)
+        if flashStatus {
+            photoSettings.flashMode = .on
+        }else{
+            photoSettings.flashMode = .off
+        }
         photoSettings.isHighResolutionPhotoEnabled = true
         photoSettings.isAutoStillImageStabilizationEnabled = true
         photoOutput.capturePhoto(with: photoSettings, delegate: self)

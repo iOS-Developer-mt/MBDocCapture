@@ -38,6 +38,8 @@ public protocol ImageScannerControllerDelegate: NSObjectProtocol {
     /// - Discussion: Your delegate's implementation of this method should dismiss the image scanner controller.
     func imageScannerController(_ scanner: ImageScannerController, didFinishScanningWithResults results: ImageScannerResults)
     
+    func imageScannerController(_ scanner: ImageScannerController, didFinishBatchScanWithResults results: [UIImage])
+    
     /// Tells the delegate that the user scanned a document.
     ///
     /// - Parameters:
@@ -46,6 +48,8 @@ public protocol ImageScannerControllerDelegate: NSObjectProtocol {
     ///   - page2Results: The results of the user scanning page 2.
     /// - Discussion: Your delegate's implementation of this method should dismiss the image scanner controller.
     func imageScannerController(_ scanner: ImageScannerController, didFinishScanningWithPage1Results page1Results: ImageScannerResults, andPage2Results page2Results: ImageScannerResults)
+    
+    
     
     /// Tells the delegate that the user cancelled the scan operation.
     ///
@@ -65,6 +69,9 @@ public protocol ImageScannerControllerDelegate: NSObjectProtocol {
     
     
     func galleryButtonClicked(_ scanner: ImageScannerController)
+    
+    
+     
 
 }
 

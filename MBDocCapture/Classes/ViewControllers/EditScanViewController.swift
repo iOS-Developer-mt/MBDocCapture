@@ -30,6 +30,7 @@ import AVFoundation
 /// The `EditScanViewController` offers an interface for the user to edit the detected rectangle.
 final class EditScanViewController: UIViewController, UIAdaptivePresentationControllerDelegate {
     
+    
     lazy private var imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.clipsToBounds = true
@@ -53,10 +54,19 @@ final class EditScanViewController: UIViewController, UIAdaptivePresentationCont
         let image = UIImage(named: "done", in: bundle(), compatibleWith: nil)
         let button = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(pushReviewController))
         
+        button.tintColor = .white
+        return button
+    }()
+    
+    lazy private var addBatch: UIBarButtonItem = {
+        
+        let image = UIImage(named: "add_batch", in: bundle(), compatibleWith: nil)
+        let button = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(addBatchClicked(_:)))
         
         button.tintColor = .white
         return button
     }()
+    
     
     lazy private var cancelButton: UIBarButtonItem = {
         let title = NSLocalizedString("mbdoccapture.cancel_button", tableName: nil, bundle: bundle(), value: "Cancel", comment: "")
@@ -64,7 +74,7 @@ final class EditScanViewController: UIViewController, UIAdaptivePresentationCont
         button.tintColor = .white
         return button
     }()
-
+    
     /// The image the rectangle was detected on.
     private let image: UIImage
     
@@ -85,7 +95,7 @@ final class EditScanViewController: UIViewController, UIAdaptivePresentationCont
         super.init(nibName: nil, bundle: nil)
     }
     
-   
+    
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -96,9 +106,13 @@ final class EditScanViewController: UIViewController, UIAdaptivePresentationCont
         
         setupViews()
         setupConstraints()
-        title = NSLocalizedString("mbdoccapture.scan_edit_title", tableName: nil, bundle: bundle(), value: "", comment: "")
-        
-        navigationItem.rightBarButtonItem = nextButton
+        // title = NSLocalizedString("mbdoccapture.scan_edit_title", tableName: nil, bundle: bundle(), value: "", comment: "")
+        if isBatchScanSelected {
+            navigationItem.rightBarButtonItems = [nextButton,addBatch]
+        }else{
+            navigationItem.rightBarButtonItem = nextButton
+        }
+        //  navigationItem.rightBarButtonItem = nextButton
         navigationItem.leftBarButtonItem = cancelButton
         navigationController?.navigationBar.backgroundColor = .red
         navigationController?.navigationBar.isTranslucent = false
@@ -142,7 +156,7 @@ final class EditScanViewController: UIViewController, UIAdaptivePresentationCont
             view.bottomAnchor.constraint(equalTo: imageView.bottomAnchor),
             view.leadingAnchor.constraint(equalTo: imageView.leadingAnchor)
         ]
-
+        
         rectViewWidthConstraint = rectView.widthAnchor.constraint(equalToConstant: 0.0)
         rectViewHeightConstraint = rectView.heightAnchor.constraint(equalToConstant: 0.0)
         
@@ -186,7 +200,7 @@ final class EditScanViewController: UIViewController, UIAdaptivePresentationCont
             "inputTopRight": CIVector(cgPoint: cartesianScaledRect.bottomRight),
             "inputBottomLeft": CIVector(cgPoint: cartesianScaledRect.topLeft),
             "inputBottomRight": CIVector(cgPoint: cartesianScaledRect.topRight)
-            ])
+        ])
         
         let enhancedImage = filteredImage.applyingAdaptiveThreshold()?.withFixedOrientation()
         
@@ -203,13 +217,14 @@ final class EditScanViewController: UIViewController, UIAdaptivePresentationCont
         
         let results = ImageScannerResults(originalImage: image, scannedImage: finalImage, enhancedImage: enhancedImage, doesUserPreferEnhancedImage: false, detectedRectangle: scaledRect)
         
+        
         finishScan(results: results)
         
-//        let reviewViewController = ReviewViewController(results: results)
-//        
-//        navigationController?.pushViewController(reviewViewController, animated: true)
+        //        let reviewViewController = ReviewViewController(results: results)
+        //
+        //        navigationController?.pushViewController(reviewViewController, animated: true)
     }
-
+    
     private func displayRect() {
         let imageSize = image.size
         let imageFrame = CGRect(origin: rectView.frame.origin, size: CGSize(width: rectViewWidthConstraint.constant, height: rectViewHeightConstraint.constant))
@@ -241,12 +256,61 @@ final class EditScanViewController: UIViewController, UIAdaptivePresentationCont
         return rect
     }
     
-     private func finishScan(results:ImageScannerResults) {
+    
+    @objc func addBatchClicked(_ sender : UIButton){
+        guard let rect = rectView.rect,
+            let ciImage = CIImage(image: image) else {
+                if let imageScannerController = navigationController as? ImageScannerController {
+                    let error = ImageScannerControllerError.ciImageCreation
+                    imageScannerController.imageScannerDelegate?.imageScannerController(imageScannerController, didFailWithError: error)
+                }
+                return
+        }
+        
+        let scaledRect = rect.scale(rectView.bounds.size, image.size)
+        self.rect = scaledRect
+        
+        var cartesianScaledRect = scaledRect.toCartesian(withHeight: image.size.height)
+        cartesianScaledRect.reorganize()
+        
+        let filteredImage = ciImage.applyingFilter("CIPerspectiveCorrection", parameters: [
+            "inputTopLeft": CIVector(cgPoint: cartesianScaledRect.bottomLeft),
+            "inputTopRight": CIVector(cgPoint: cartesianScaledRect.bottomRight),
+            "inputBottomLeft": CIVector(cgPoint: cartesianScaledRect.topLeft),
+            "inputBottomRight": CIVector(cgPoint: cartesianScaledRect.topRight)
+        ])
+        
+         
+        var uiImage: UIImage!
+        
+        // Let's try to generate the CGImage from the CIImage before creating a UIImage.
+        if let cgImage = CIContext(options: nil).createCGImage(filteredImage, from: filteredImage.extent) {
+            uiImage = UIImage(cgImage: cgImage)
+        } else {
+            uiImage = UIImage(ciImage: filteredImage, scale: 1.0, orientation: .up)
+        }
+        
+        let finalImage = uiImage.withFixedOrientation()
+        
+        bacthScannedImage.append(finalImage)
+        navigationController?.popToRootViewController(animated: true)
+    }
+    
+    
+    private func finishScan(results:ImageScannerResults) {
         guard let imageScannerController = navigationController as? ImageScannerController else { return }
+        
         var newResults = results
         newResults.scannedImage = results.scannedImage
-//        newResults.enhancedImage = results.enhancedImage?.rotated(by: rotationAngle) ?? results.enhancedImage
-//        newResults.doesUserPreferEnhancedImage = isCurrentlyDisplayingEnhancedImage
+        
+        if isBatchScanSelected {
+            bacthScannedImage.append(newResults.scannedImage)
+            print(bacthScannedImage.count)
+            imageScannerController.imageScannerDelegate?.imageScannerController(imageScannerController, didFinishBatchScanWithResults: bacthScannedImage)
+        }
+        
+        //        newResults.enhancedImage = results.enhancedImage?.rotated(by: rotationAngle) ?? results.enhancedImage
+        //        newResults.doesUserPreferEnhancedImage = isCurrentlyDisplayingEnhancedImage
         if CaptureSession.current.isScanningTwoFacedDocument {
             if let firstPageResult = CaptureSession.current.firstScanResult {
                 imageScannerController.imageScannerDelegate?.imageScannerController(imageScannerController, didFinishScanningWithPage1Results: firstPageResult, andPage2Results: newResults)
@@ -260,6 +324,6 @@ final class EditScanViewController: UIViewController, UIAdaptivePresentationCont
             imageScannerController.imageScannerDelegate?.imageScannerController(imageScannerController, didFinishScanningWithResults: newResults)
         }
     }
-
+    
     
 }

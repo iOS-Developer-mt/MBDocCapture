@@ -179,6 +179,7 @@ final class CaptureSessionManager: NSObject, AVCaptureVideoDataOutputSampleBuffe
         }else{
             photoSettings.flashMode = .off
         }
+    
         photoSettings.isHighResolutionPhotoEnabled = true
         photoSettings.isAutoStillImageStabilizationEnabled = true
         photoOutput.capturePhoto(with: photoSettings, delegate: self)

@@ -28,6 +28,9 @@ import UIKit
 import AVFoundation
 
 // The `ScannerViewController` offers an interface to give feedback to the user regarding rectangles that are detected. It also gives the user the opportunity to capture an image with a detected rectangle.
+var isBatchScanSelected = false
+var bacthScannedImage = [UIImage]()
+
 final class ScannerViewController: UIViewController, UIAdaptivePresentationControllerDelegate {
     
     private var prepOverlayView: UIView!
@@ -47,7 +50,6 @@ final class ScannerViewController: UIViewController, UIAdaptivePresentationContr
     let QRButton = UIButton()
 
     private let griview = GridView()
-    
     
     lazy private var ScanTopView : UIView = {
         let myView =  UIView()
@@ -182,7 +184,7 @@ final class ScannerViewController: UIViewController, UIAdaptivePresentationContr
         super.viewDidLoad()
         
         title = nil
-        
+        isBatchScanSelected = false
         setupNavigationBar()
         setupViews()
         setupConstraints()
@@ -283,6 +285,8 @@ final class ScannerViewController: UIViewController, UIAdaptivePresentationContr
     
     
     @objc func singleButtonTapped(_ sender : UIButton){
+        isBatchScanSelected = false
+        bacthScannedImage.removeAll()
         singleButton.setImage(UIImage(named: "single_selected", in: bundle(), compatibleWith: nil), for: .normal)
         
         batchButton.setImage(UIImage(named: "batch", in: bundle(), compatibleWith: nil), for: .normal)
@@ -290,6 +294,8 @@ final class ScannerViewController: UIViewController, UIAdaptivePresentationContr
     }
     
     @objc func batchleButtonTapped(_ sender : UIButton){
+        isBatchScanSelected = true
+        bacthScannedImage.removeAll()
         batchButton.setImage(UIImage(named: "batch_selected", in: bundle(), compatibleWith: nil), for: .normal)
         
         singleButton.setImage(UIImage(named: "single", in: bundle(), compatibleWith: nil), for: .normal)

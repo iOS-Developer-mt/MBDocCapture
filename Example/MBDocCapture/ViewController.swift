@@ -51,6 +51,13 @@ class ViewController: UIViewController {
 }
 
 extension ViewController: ImageScannerControllerDelegate {
+    
+    func imageScannerController(_ scanner: ImageScannerController, didFinishBatchScanWithResults results: [UIImage]) {
+        scanner.dismiss(animated: true) {
+            print(results.count)
+        }
+    }
+    
     func galleryButtonClicked(_ scanner: ImageScannerController) {
         print("gallery tapped")
     }

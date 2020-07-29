@@ -44,6 +44,14 @@ final class ReviewViewController: UIViewController, UIAdaptivePresentationContro
         return imageView
     }()
     
+    lazy private var activityIndicator: UIActivityIndicatorView = {
+        let activityIndicator = UIActivityIndicatorView(style: .gray)
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+        return activityIndicator
+    }()
+
+    
     lazy private var enhanceButton: UIBarButtonItem = {
         let image = UIImage(named: "enhance", in: bundle(), compatibleWith: nil)
         let button = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(toggleEnhancedImage))
@@ -94,9 +102,30 @@ final class ReviewViewController: UIViewController, UIAdaptivePresentationContro
             isModalInPresentation = false
             navigationController?.presentationController?.delegate = self
         }
+      //  self.navigationController?.navigationBar.barTintColor = .white
+        //self.navigationController?.navigationItem.title = "Edit Image"
         
-        title = NSLocalizedString("mbdoccapture.scan_review_title", tableName: nil, bundle: bundle(), value: "Edit Image", comment: "")
+      //  title = NSLocalizedString("mbdoccapture.scan_review_title", tableName: nil, bundle: bundle(), value: "Edit Image", comment: "")
+        
         navigationItem.rightBarButtonItem = doneButton
+        self.addActivityIndicator()
+    }
+    
+    func addActivityIndicator() {
+        self.view.addSubview(activityIndicator)
+        activityIndicator.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
+         activityIndicator.centerYAnchor.constraint(equalTo: self.view.centerYAnchor).isActive = true
+        activityIndicator.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        activityIndicator.widthAnchor.constraint(equalToConstant: 50).isActive = true
+        activityIndicator.startAnimating()
+        activityIndicator.bringSubviewToFront(self.view)
+    }
+    
+    func removeActivityIndicator() {
+        DispatchQueue.main.async {
+            self.activityIndicator.stopAnimating()
+            self.activityIndicator.removeFromSuperview()
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -111,6 +140,7 @@ final class ReviewViewController: UIViewController, UIAdaptivePresentationContro
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         navigationController?.setToolbarHidden(true, animated: true)
+        self.removeActivityIndicator()
     }
     
     func presentationControllerShouldDismiss(_ presentationController: UIPresentationController) -> Bool {
@@ -176,6 +206,7 @@ final class ReviewViewController: UIViewController, UIAdaptivePresentationContro
     }
     
     @objc private func finishScan() {
+        
         guard let imageScannerController = navigationController as? ImageScannerController else { return }
         var newResults = results
         newResults.scannedImage = results.scannedImage.rotated(by: rotationAngle) ?? results.scannedImage

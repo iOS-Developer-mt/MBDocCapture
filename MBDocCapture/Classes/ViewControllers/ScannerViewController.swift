@@ -48,7 +48,7 @@ final class ScannerViewController: UIViewController, UIAdaptivePresentationContr
     let singleButton = UIButton()
     let flashButton = UIButton()
     let QRButton = UIButton()
-
+    
     private let griview = GridView()
     
     lazy private var ScanTopView : UIView = {
@@ -198,32 +198,60 @@ final class ScannerViewController: UIViewController, UIAdaptivePresentationContr
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        setNeedsStatusBarAppearanceUpdate()
         
-        CaptureSession.current.isEditing = false
-        rectView.removeRectangle()
-        captureSessionManager?.start()
-        UIApplication.shared.isIdleTimerDisabled = true
         
-        navigationController?.setToolbarHidden(true, animated: false)
-        
-        if CaptureSession.current.isScanningTwoFacedDocument {
-            if let _ = CaptureSession.current.firstScanResult {
-                displayPrepOverlay()
+        if AVCaptureDevice.authorizationStatus(for: AVMediaType.video) ==  AVAuthorizationStatus.authorized {
+            print("Already Authorized")
+            setNeedsStatusBarAppearanceUpdate()
+            
+            CaptureSession.current.isEditing = false
+            rectView.removeRectangle()
+            captureSessionManager?.start()
+            UIApplication.shared.isIdleTimerDisabled = true
+            
+            navigationController?.setToolbarHidden(true, animated: false)
+            
+            if CaptureSession.current.isScanningTwoFacedDocument {
+                if let _ = CaptureSession.current.firstScanResult {
+                    displayPrepOverlay()
+                }else{
+                    displayPrepOverlay()
+                }
+                ScanBottomView.isHidden = true
+                ScanTopView.isHidden = true
             }else{
-                displayPrepOverlay()
+                ScanBottomView.isHidden = false
+                ScanTopView.isHidden = false
             }
-            ScanBottomView.isHidden = true
-            ScanTopView.isHidden = true
-        }else{
-            ScanBottomView.isHidden = false
-            ScanTopView.isHidden = false
+        } else {
+            let ac = UIAlertController(title: "Alert", message: "We are unable to scan documents without camera permission, kindly grant access to camera by going to App settings", preferredStyle: .alert)
+            let setting = UIAlertAction(title: "Open Setting", style: .default) { (action) in
+                if let appSettings = URL(string: UIApplication.openSettingsURLString) {
+                    DispatchQueue.main.async {
+                        UIApplication.shared.open(appSettings, options: [:], completionHandler: nil)
+                    }
+                }
+            }
+            let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+            ac.addAction(setting)
+            ac.addAction(cancel)
+            self.present(ac, animated: true, completion: nil)
+            self.dismiss(animated: true, completion: nil)
         }
+        
+        
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        updateCameraOrientation()
+        if AVCaptureDevice.authorizationStatus(for: AVMediaType.video) ==  AVAuthorizationStatus.authorized {
+            print("Already Authorized")
+            updateCameraOrientation()
+            
+        }else{
+            //
+        }
+        
         
     }
     

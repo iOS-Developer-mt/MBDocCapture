@@ -177,7 +177,8 @@ final class EditScanViewController: UIViewController, UIAdaptivePresentationCont
     // MARK: - Actions
     
     @objc func dismissEditScanViewControllerController() {
-        dismiss(animated: true) 
+        //dismiss(animated: true)
+        self.navigationController?.popViewController(animated: true)
     }
     @objc func pushReviewController() {
         guard let rect = rectView.rect,

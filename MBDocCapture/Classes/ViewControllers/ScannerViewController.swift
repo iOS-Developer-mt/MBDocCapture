@@ -200,8 +200,8 @@ final class ScannerViewController: UIViewController, UIAdaptivePresentationContr
         super.viewWillAppear(animated)
         
         
-        if AVCaptureDevice.authorizationStatus(for: AVMediaType.video) ==  AVAuthorizationStatus.authorized {
-            print("Already Authorized")
+        if AVCaptureDevice.authorizationStatus(for: .video) ==  .authorized
+        {
             setNeedsStatusBarAppearanceUpdate()
             
             CaptureSession.current.isEditing = false
@@ -223,37 +223,113 @@ final class ScannerViewController: UIViewController, UIAdaptivePresentationContr
                 ScanBottomView.isHidden = false
                 ScanTopView.isHidden = false
             }
-        } else {
-            let ac = UIAlertController(title: "Alert", message: "We are unable to scan documents without camera permission, kindly grant access to camera by going to App settings", preferredStyle: .alert)
-            let setting = UIAlertAction(title: "Open Setting", style: .default) { (action) in
-                if let appSettings = URL(string: UIApplication.openSettingsURLString) {
+            updateCameraOrientation()
+            
+        }
+        else
+        {
+            AVCaptureDevice.requestAccess(for: .video, completionHandler: { (granted :Bool) -> Void in
+                if granted == true
+                {
                     DispatchQueue.main.async {
-                        UIApplication.shared.open(appSettings, options: [:], completionHandler: nil)
+                        self.setNeedsStatusBarAppearanceUpdate()
+                        
+                        CaptureSession.current.isEditing = false
+                        self.rectView.removeRectangle()
+                        self.captureSessionManager?.start()
+                        UIApplication.shared.isIdleTimerDisabled = true
+                        
+                        self.navigationController?.setToolbarHidden(true, animated: false)
+                        
+                        if CaptureSession.current.isScanningTwoFacedDocument {
+                            if let _ = CaptureSession.current.firstScanResult {
+                                self.displayPrepOverlay()
+                            }else{
+                                self.displayPrepOverlay()
+                            }
+                            self.ScanBottomView.isHidden = true
+                            self.ScanTopView.isHidden = true
+                        }else{
+                            self.ScanBottomView.isHidden = false
+                            self.ScanTopView.isHidden = false
+                        }
+                        self.updateCameraOrientation()
                     }
+                    
                 }
-            }
-            let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-            ac.addAction(setting)
-            ac.addAction(cancel)
-            self.present(ac, animated: true, completion: nil)
-            self.dismiss(animated: true, completion: nil)
+                else
+                {
+                    let ac = UIAlertController(title: "Alert", message: "We are unable to scan documents without camera permission, kindly grant access to camera by going to App settings", preferredStyle: .alert)
+                    let setting = UIAlertAction(title: "Open Setting", style: .default) { (action) in
+                        if let appSettings = URL(string: UIApplication.openSettingsURLString) {
+                            DispatchQueue.main.async {
+                                UIApplication.shared.open(appSettings, options: [:], completionHandler: nil)
+                            }
+                        }
+                    }
+                    let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+                    ac.addAction(setting)
+                    ac.addAction(cancel)
+                    self.present(ac, animated: true, completion: nil)
+                    self.dismiss(animated: true, completion: nil)
+                }
+            });
         }
         
         
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        if AVCaptureDevice.authorizationStatus(for: AVMediaType.video) ==  AVAuthorizationStatus.authorized {
-            print("Already Authorized")
-            updateCameraOrientation()
-            
-        }else{
-            //
-        }
-        
-        
-    }
+    //    override func viewDidAppear(_ animated: Bool) {
+    //        super.viewDidAppear(animated)
+    //
+    //
+    //
+    //        if AVCaptureDevice.authorizationStatus(for: AVMediaType.video) ==  AVAuthorizationStatus.authorized {
+    //                   print("Already Authorized")
+    //
+    //               }else {
+    //                   let ac = UIAlertController(title: "Alert", message: "We are unable to scan documents without camera permission, kindly grant access to camera by going to App settings", preferredStyle: .alert)
+    //                   let setting = UIAlertAction(title: "Open Setting", style: .default) { (action) in
+    //                       if let appSettings = URL(string: UIApplication.openSettingsURLString) {
+    //                           DispatchQueue.main.async {
+    //                               UIApplication.shared.open(appSettings, options: [:], completionHandler: nil)
+    //                           }
+    //                       }
+    //                   }
+    //                   let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+    //                   ac.addAction(setting)
+    //                   ac.addAction(cancel)
+    //                   self.present(ac, animated: true, completion: nil)
+    //                   self.dismiss(animated: true, completion: nil)
+    //               }
+    //
+    //        if AVCaptureDevice.authorizationStatus(for: AVMediaType.video) ==  AVAuthorizationStatus.authorized {
+    //            print("Already Authorized")
+    //            setNeedsStatusBarAppearanceUpdate()
+    //
+    //            CaptureSession.current.isEditing = false
+    //            rectView.removeRectangle()
+    //            captureSessionManager?.start()
+    //            UIApplication.shared.isIdleTimerDisabled = true
+    //
+    //            navigationController?.setToolbarHidden(true, animated: false)
+    //
+    //            if CaptureSession.current.isScanningTwoFacedDocument {
+    //                if let _ = CaptureSession.current.firstScanResult {
+    //                    displayPrepOverlay()
+    //                }else{
+    //                    displayPrepOverlay()
+    //                }
+    //                ScanBottomView.isHidden = true
+    //                ScanTopView.isHidden = true
+    //            }else{
+    //                ScanBottomView.isHidden = false
+    //                ScanTopView.isHidden = false
+    //            }
+    //            updateCameraOrientation()
+    //
+    //        }
+    //    }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
@@ -315,6 +391,7 @@ final class ScannerViewController: UIViewController, UIAdaptivePresentationContr
     @objc func singleButtonTapped(_ sender : UIButton){
         isBatchScanSelected = false
         bacthScannedImage.removeAll()
+        QRButton.isEnabled = true
         singleButton.setImage(UIImage(named: "single_selected", in: bundle(), compatibleWith: nil), for: .normal)
         
         batchButton.setImage(UIImage(named: "batch", in: bundle(), compatibleWith: nil), for: .normal)
@@ -323,6 +400,8 @@ final class ScannerViewController: UIViewController, UIAdaptivePresentationContr
     
     @objc func batchleButtonTapped(_ sender : UIButton){
         isBatchScanSelected = true
+        QRButton.isEnabled = false
+        
         bacthScannedImage.removeAll()
         batchButton.setImage(UIImage(named: "batch_selected", in: bundle(), compatibleWith: nil), for: .normal)
         
@@ -519,7 +598,18 @@ final class ScannerViewController: UIViewController, UIAdaptivePresentationContr
     
     @objc private func cancelImageScannerController() {
         guard let imageScannerController = navigationController as? ImageScannerController else { return }
-        imageScannerController.imageScannerDelegate?.imageScannerControllerDidCancel(imageScannerController)
+        
+        let alert = UIAlertController(title: "Alert", message: "Do you  really want to exit?", preferredStyle: .alert)
+        let cancel = UIAlertAction(title: "No", style: .cancel, handler: nil)
+        let exit = UIAlertAction(title: "Yes", style: .default) { (action) in
+            imageScannerController.imageScannerDelegate?.imageScannerControllerDidCancel(imageScannerController)
+        }
+        alert.addAction(cancel)
+        alert.addAction(exit)
+        
+        self.present(alert, animated: true, completion: nil)
+        
+        
     }
 }
 

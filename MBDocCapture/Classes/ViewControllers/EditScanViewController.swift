@@ -101,6 +101,11 @@ final class EditScanViewController: UIViewController, UIAdaptivePresentationCont
         fatalError("init(coder:) has not been implemented")
     }
     
+    
+    deinit {
+        print("crop has been deallocated")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -177,8 +182,8 @@ final class EditScanViewController: UIViewController, UIAdaptivePresentationCont
     // MARK: - Actions
     
     @objc func dismissEditScanViewControllerController() {
-        //dismiss(animated: true)
         self.navigationController?.popViewController(animated: true)
+        dismiss(animated: true)
     }
     @objc func pushReviewController() {
         guard let rect = rectView.rect,

@@ -178,6 +178,11 @@ final class ScannerViewController: UIViewController, UIAdaptivePresentationContr
         return activityIndicator
     }()
     
+    deinit {
+        print("scanner has been deallocated")
+    }
+    
+    
     // MARK: - Life Cycle
     
     override func viewDidLoad() {

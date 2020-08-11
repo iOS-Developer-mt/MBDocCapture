@@ -20,9 +20,14 @@ class ViewController: UIViewController {
         // Do any additional setup after loading the view, typically from a nib.
     }
 
+    deinit {
+        print("scanner contoller is being deinitilize")
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+        print("didReceiveMemoryWarning")
     }
 
     @IBAction func didSelectType1Button(_ sender: Any) {

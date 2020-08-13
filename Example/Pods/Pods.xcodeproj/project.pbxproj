@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1806CB3924D1877200E9161B /* add_batch.png in Resources */ = {isa = PBXBuildFile; fileRef = 1806CB3824D1877200E9161B /* add_batch.png */; };
+		1807AF6224E52F6500744464 /* add_batch.png in Resources */ = {isa = PBXBuildFile; fileRef = 1807AF6124E52F6500744464 /* add_batch.png */; };
 		180DA13524AC3F5B0001340A /* qrcode_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = 180DA13424AC3F5B0001340A /* qrcode_selected.png */; };
 		180DA13724AC3FC30001340A /* camera.png in Resources */ = {isa = PBXBuildFile; fileRef = 180DA13624AC3FC30001340A /* camera.png */; };
 		180DA13A24AC40C40001340A /* gallery.png in Resources */ = {isa = PBXBuildFile; fileRef = 180DA13824AC40C30001340A /* gallery.png */; };
@@ -93,7 +93,7 @@
 		07A927842E1B61778086305B90625420 /* Pods-MBDocCapture_Example-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-MBDocCapture_Example-dummy.m"; sourceTree = "<group>"; };
 		0B9E6F55561E903318CE18E140CA94EB /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		0E192010F74D453CE58426260BFEC4DC /* Pods-MBDocCapture_Example-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-MBDocCapture_Example-acknowledgements.plist"; sourceTree = "<group>"; };
-		1806CB3824D1877200E9161B /* add_batch.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = add_batch.png; sourceTree = "<group>"; };
+		1807AF6124E52F6500744464 /* add_batch.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = add_batch.png; sourceTree = "<group>"; };
 		180DA13424AC3F5B0001340A /* qrcode_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = qrcode_selected.png; sourceTree = "<group>"; };
 		180DA13624AC3FC30001340A /* camera.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = camera.png; sourceTree = "<group>"; };
 		180DA13824AC40C30001340A /* gallery.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = gallery.png; sourceTree = "<group>"; };
@@ -361,8 +361,8 @@
 			isa = PBXGroup;
 			children = (
 				180DA13624AC3FC30001340A /* camera.png */,
+				1807AF6124E52F6500744464 /* add_batch.png */,
 				180DA13424AC3F5B0001340A /* qrcode_selected.png */,
-				1806CB3824D1877200E9161B /* add_batch.png */,
 				180DA13C24AC43CD0001340A /* grid.png */,
 				180DA14C24AC4B170001340A /* batch_selected@2x.png */,
 				180DA14424AC457B0001340A /* qrcode.png */,
@@ -608,7 +608,7 @@
 				8406C25322660D87004DD93B /* rotate@3x.png in Resources */,
 				180DA13724AC3FC30001340A /* camera.png in Resources */,
 				8406C25722660D87004DD93B /* enhance@2x.png in Resources */,
-				1806CB3924D1877200E9161B /* add_batch.png in Resources */,
+				1807AF6224E52F6500744464 /* add_batch.png in Resources */,
 				180DA13A24AC40C40001340A /* gallery.png in Resources */,
 				180DA14524AC457B0001340A /* qrcode.png in Resources */,
 				180DA14324AC455F0001340A /* single_selected.png in Resources */,

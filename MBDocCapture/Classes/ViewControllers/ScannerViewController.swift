@@ -30,6 +30,7 @@ import AVFoundation
 // The `ScannerViewController` offers an interface to give feedback to the user regarding rectangles that are detected. It also gives the user the opportunity to capture an image with a detected rectangle.
 var isBatchScanSelected = false
 var bacthScannedImage = [UIImage]()
+var takeNextImage = true
 
 final class ScannerViewController: UIViewController, UIAdaptivePresentationControllerDelegate {
     
@@ -200,6 +201,11 @@ final class ScannerViewController: UIViewController, UIAdaptivePresentationContr
         
         NotificationCenter.default.addObserver(self, selector: #selector(subjectAreaDidChange), name: NSNotification.Name.AVCaptureDeviceSubjectAreaDidChange, object: nil)
         //        NotificationCenter.default.addObserver(self, selector: #selector(updateCameraOrientation), name: UIDevice.orientationDidChangeNotification, object: nil)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        takeNextImage = true
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -563,10 +569,16 @@ final class ScannerViewController: UIViewController, UIAdaptivePresentationContr
     // MARK: - Actions
     
     @objc private func captureImage(_ sender: UIButton) {
-        (navigationController as? ImageScannerController)?.flashToBlack()
-        shutterButton.isUserInteractionEnabled = false
-        // toggleFlash()
-        captureSessionManager?.capturePhoto()
+        
+        if takeNextImage {
+            (navigationController as? ImageScannerController)?.flashToBlack()
+            shutterButton.isUserInteractionEnabled = false
+            // toggleFlash()
+            captureSessionManager?.capturePhoto()
+            takeNextImage = false
+        }
+        
+        
     }
     
     func toggleFlash() {

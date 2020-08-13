@@ -179,6 +179,7 @@ final class ScannerViewController: UIViewController, UIAdaptivePresentationContr
     }()
     
     deinit {
+        bacthScannedImage.removeAll()
         print("scanner has been deallocated")
     }
     

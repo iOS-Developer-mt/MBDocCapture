@@ -231,6 +231,45 @@ final class EditScanViewController: UIViewController, UIAdaptivePresentationCont
         //        navigationController?.pushViewController(reviewViewController, animated: true)
     }
     
+    func downSizeImage(img : UIImage) -> Data {
+        var imageData = img.pngData()
+        // Resize the image if it exceeds the 2MB API limit
+        if (imageData?.count)! > 2097152 {
+            let oldSize = img.size
+            let newSize = CGSize(width: 500, height: oldSize.width/oldSize.height * 500)
+            let newImage = self.resizeImage(image: img, targetSize: newSize)
+            imageData = newImage.jpegData(compressionQuality: 0.75)
+        }
+        return imageData!
+    }
+    
+    
+    func resizeImage(image: UIImage, targetSize: CGSize) -> UIImage {
+        let size = image.size
+
+        let widthRatio  = targetSize.width  / size.width
+        let heightRatio = targetSize.height / size.height
+
+        // Figure out what our orientation is, and use that to form the rectangle
+        var newSize: CGSize
+        if(widthRatio > heightRatio) {
+            newSize = CGSize(width: size.width * heightRatio, height: size.height * heightRatio)
+        } else {
+            newSize = CGSize(width: size.width * widthRatio,  height: size.height * widthRatio)
+        }
+
+        // This is the rect that we've calculated out and this is what is actually used below
+        let rect = CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height)
+
+        // Actually do the resizing to the rect using the ImageContext stuff
+        UIGraphicsBeginImageContextWithOptions(newSize, false, 1.0)
+        image.draw(in: rect)
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+
+        return newImage!
+    }
+    
     private func displayRect() {
         let imageSize = image.size
         let imageFrame = CGRect(origin: rectView.frame.origin, size: CGSize(width: rectViewWidthConstraint.constant, height: rectViewHeightConstraint.constant))
@@ -310,9 +349,11 @@ final class EditScanViewController: UIViewController, UIAdaptivePresentationCont
         newResults.scannedImage = results.scannedImage
         
         if isBatchScanSelected {
-            bacthScannedImage.append(newResults.scannedImage)
+            let img = downSizeImage(img: newResults.scannedImage)
+            bacthScannedImage.append(UIImage(data: img)!)
             print(bacthScannedImage.count)
             imageScannerController.imageScannerDelegate?.imageScannerController(imageScannerController, didFinishBatchScanWithResults: bacthScannedImage)
+            isBatchScanSelected = false
         }
         
         //        newResults.enhancedImage = results.enhancedImage?.rotated(by: rotationAngle) ?? results.enhancedImage

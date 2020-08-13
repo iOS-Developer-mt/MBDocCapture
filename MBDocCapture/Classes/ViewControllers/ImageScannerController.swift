@@ -83,7 +83,7 @@ public protocol ImageScannerControllerDelegate: NSObjectProtocol {
 public final class ImageScannerController: UINavigationController {
     
     /// The object that acts as the delegate of the `ImageScannerController`.
-     public weak var imageScannerDelegate: ImageScannerControllerDelegate?
+     public weak var imageScannerDelegate : ImageScannerControllerDelegate?
     
     public var shouldScanTwoFaces: Bool = false {
         didSet {
